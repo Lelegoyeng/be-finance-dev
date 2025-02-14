@@ -2,14 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/main.ts",
+      "src": "index.js",
       "use": "@vercel/node"
     }
-  ],
-  "routes": [{ "src": "/(.*)", "dest": "/src/main.ts" }],
-  "env": {
-    "DATABASE_URL": "postgresql://postgres.ikiwdqprbvilodufnlwu:lelegoyeng77@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true",
-    "DIRECT_URL": "postgresql://postgres.ikiwdqprbvilodufnlwu:lelegoyeng77@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
-  },
-  "commands": ["pnpm install", "pnpm prisma generate"]
+  ]
 }
