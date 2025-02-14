@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Transaction {
+  id              Int      @id() @default(autoincrement())
+  tanggal         DateTime
+  nominal         Int
+  keterangan      String
+  kategori        Kategori
+  jenis           Jenis
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt()
+}
+
+enum Kategori {
+  CASH
+  TRANSFER
+}
+
+enum Jenis {
+  PENDAPATAN
+  PENGELUARAN
+}
+

@@ -5,8 +5,8 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('data')
-  async getData() {
-    return this.appService.getData();
+  @Get('/transaction')
+  async getPrismaData() {
+    return this.appService.getDataFromPrisma();
   }
 }
