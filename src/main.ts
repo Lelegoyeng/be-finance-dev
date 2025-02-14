@@ -12,7 +12,7 @@ async function bootstrap() {
     .addTag('My Finance')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('', app, documentFactory);
+  SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(3000);
 }
