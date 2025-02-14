@@ -1,2 +1,2 @@
-SUPABASE_URL=<Your Supabase URL>
-SUPABASE_ANON_KEY=<Your Supabase Anon Key>
+DATABASE_URL = "postgresql://postgres.ikiwdqprbvilodufnlwu:[Password]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL = "postgresql://postgres.ikiwdqprbvilodufnlwu:[Password]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"

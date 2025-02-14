@@ -5,7 +5,8 @@ import { PrismaService } from './prisma.service';
 export class AppService {
   constructor(private prisma: PrismaService) {}
 
-  async getDataFromPrisma() {
+  async getDataFromPrisma(date: string) {
+    console.log(date);
     return this.prisma.transaction.findMany();
   }
 }
