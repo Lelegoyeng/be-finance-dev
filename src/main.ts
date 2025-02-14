@@ -12,8 +12,8 @@ async function bootstrap() {
     .addTag('My Finance')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory);
+  SwaggerModule.setup('', app, documentFactory);
 
-  await app.listen(5000);
+  await app.listen(3000);
 }
 bootstrap();
