@@ -179,21 +179,10 @@ export class AppController {
   }
 
   @Get('/')
-  @ApiOperation({
-    summary: 'Endpoint untuk pengujian apakah server berjalan dengan baik',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Server berjalan dengan baik.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Terjadi kesalahan internal pada server.',
-  })
   async testEndpoint() {
     return {
       status: 'success',
-      message: 'Server Vercel berjalan dengan baik!',
+      message: 'Server berjalan dengan baik!',
     };
   }
 }
