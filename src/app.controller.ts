@@ -12,15 +12,14 @@ export class AppController {
   @ApiParam({
     name: 'date',
     required: true,
-    example: '2024-02-14',
+    example: '2025-02-06T10:15:30.000Z',
     description: 'Tanggal Transaksi',
   })
-  async getPrismaData(@Param('date') date: string) {
+  async getPrismaData(@Param('date') date: Date) {
     return this.appService.getDataFromPrisma(date);
   }
 
   @Post('/transaction')
-  @ApiOperation({ summary: 'Create a new transaction' })
   @ApiBody({
     schema: {
       type: 'object',

@@ -22,8 +22,7 @@ model Transaction {
 model Summary {
     id              Int      @id() @default(autoincrement())
     nominal         Int
-    bulan           Int
-    tahun           Int
+    date            DateTime
 }
 
 
