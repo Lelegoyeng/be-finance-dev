@@ -20,15 +20,40 @@ export class AppService {
       0,
     );
 
-    // Menghitung total nominal dari semua transaksi sebelum bulan saat ini
     const summary = await this.prisma.summary.aggregate({
       _sum: {
         nominal: true,
       },
       where: {
         date: {
-          lt: awalBulanSaatIni, // Hanya ambil data sebelum bulan ini
+          lt: awalBulanSaatIni,
         },
+      },
+    });
+
+    const pendapatan = await this.prisma.transaction.aggregate({
+      _sum: {
+        nominal: true,
+      },
+      where: {
+        tanggal: {
+          gte: awalBulanSaatIni,
+          lte: akhirBulanSaatIni,
+        },
+        jenis: 'PENDAPATAN',
+      },
+    });
+
+    const pengeluaran = await this.prisma.transaction.aggregate({
+      _sum: {
+        nominal: true,
+      },
+      where: {
+        tanggal: {
+          gte: awalBulanSaatIni,
+          lte: akhirBulanSaatIni,
+        },
+        jenis: 'PENGELUARAN',
       },
     });
 
@@ -36,11 +61,17 @@ export class AppService {
     const hasil = {
       tanggal: tanggal,
       bulanlalu: summary ? summary._sum.nominal || 0 : 0,
+      pendapatan: pendapatan._sum.nominal || 0,
+      pengeluaran: pengeluaran._sum.nominal || 0,
+      total:
+        (summary ? summary._sum.nominal || 0 : 0) +
+        (pendapatan._sum.nominal || 0) -
+        (pengeluaran._sum.nominal || 0),
       rows: await this.prisma.transaction.findMany({
         where: {
           tanggal: {
-            gte: awalBulanSaatIni, // Dari awal bulan ini
-            lte: akhirBulanSaatIni, // Sampai akhir bulan ini
+            gte: awalBulanSaatIni,
+            lte: akhirBulanSaatIni,
           },
         },
       }),
