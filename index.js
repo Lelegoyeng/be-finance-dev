@@ -19,7 +19,7 @@ const start = async () => {
 
     app.use(express.static('public'));
 
-    await app.listen(3000); // Gunakan port dari Vercel
+    await app.listen(process.env.PORT || 3000); // Gunakan port dari Vercel
 };
 
 start();
