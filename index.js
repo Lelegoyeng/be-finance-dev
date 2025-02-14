@@ -1,25 +1,19 @@
-const { NestFactory } = require('@nestjs/core');
-const { AppModule } = require('./dist/app.module');
-const { NestExpressApplication } = require('@nestjs/platform-express');
-const { SwaggerModule, DocumentBuilder } = require('@nestjs/swagger');
-const express = require('express');
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-const start = async () => {
-    const app = await NestFactory.create(NestExpressApplication, AppModule);
-
-    // Swagger setup
+async function bootstrap() {
+    const app = await NestFactory.create < NestExpressApplication > (AppModule);
     const config = new DocumentBuilder()
-        .setTitle('My Finance API')
+        .setTitle('Api My Finance')
         .setDescription('My Finance API description')
         .setVersion('1.0')
-        .addTag('finance')
+        .addTag('My Finance')
         .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('', app, document);  // Swagger UI di root
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('', app, documentFactory);
 
-    app.use(express.static('public'));
-
-    await app.listen(process.env.PORT || 3000); // Gunakan port dari Vercel
-};
-
-start();
+    await app.listen(3000);
+}
+bootstrap();
