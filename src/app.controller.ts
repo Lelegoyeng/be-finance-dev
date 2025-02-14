@@ -1,5 +1,21 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Headers,
+  UnauthorizedException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiParam,
+  ApiBody,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { Jenis, Kategori } from '@prisma/client';
 
@@ -8,6 +24,17 @@ import { Jenis, Kategori } from '@prisma/client';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  // Middleware to check for secretKey
+  private validateSecretKey(secretKey: string) {
+    const validSecretKey = 'myfinance2025'; // Replace with your actual secret key
+    if (secretKey !== validSecretKey) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Invalid or missing secret key',
+      });
+    }
+  }
+
   @Get('/transaction/:date')
   @ApiParam({
     name: 'date',
@@ -15,8 +42,44 @@ export class AppController {
     example: '2025-02-06T10:15:30.000Z',
     description: 'Tanggal Transaksi',
   })
-  async getPrismaData(@Param('date') date: Date) {
-    return this.appService.getDataFromPrisma(date);
+  @ApiResponse({
+    status: 200,
+    description: 'Data transaksi berhasil diambil.',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          tanggal: { type: 'string', format: 'date-time' },
+          nominal: { type: 'number' },
+          keterangan: { type: 'string' },
+          kategori: { type: 'string' },
+          jenis: { type: 'string' },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Secret key tidak valid atau tidak ada.',
+  })
+  async getPrismaData(
+    @Param('date') date: Date,
+    @Headers('secretkey') secretKey: string,
+  ) {
+    this.validateSecretKey(secretKey);
+    const data = await this.appService.getDataFromPrisma(date);
+    if (!data) {
+      throw new HttpException(
+        'Data transaksi tidak ditemukan',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return {
+      status: 'success',
+      message: 'Data transaksi berhasil diambil',
+      data,
+    };
   }
 
   @Post('/transaction')
@@ -47,6 +110,37 @@ export class AppController {
       required: ['tanggal', 'nominal', 'keterangan', 'kategori', 'jenis'],
     },
   })
+  @ApiResponse({
+    status: 201,
+    description: 'Transaksi berhasil dibuat.',
+    schema: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', example: 'success' },
+        message: { type: 'string', example: 'Transaksi berhasil dibuat' },
+        data: {
+          type: 'object',
+          properties: {
+            tanggal: { type: 'string', format: 'date-time' },
+            nominal: { type: 'number' },
+            keterangan: { type: 'string' },
+            kategori: { type: 'string' },
+            jenis: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Permintaan tidak valid.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Secret key tidak valid atau tidak ada.',
+  })
   async createTransaction(
     @Body()
     data: {
@@ -58,7 +152,29 @@ export class AppController {
       createdAt: Date;
       updatedAt: Date;
     },
+    @Headers('secretkey') secretKey: string,
   ) {
-    return this.appService.createTransaction(data);
+    this.validateSecretKey(secretKey);
+
+    // Simulating possible validation errors (e.g., missing fields)
+    if (
+      !data.tanggal ||
+      !data.nominal ||
+      !data.keterangan ||
+      !data.kategori ||
+      !data.jenis
+    ) {
+      throw new HttpException(
+        'Data yang dikirim tidak lengkap',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const transaction = await this.appService.createTransaction(data);
+    return {
+      status: 'success',
+      message: 'Transaksi berhasil dibuat',
+      data: transaction,
+    };
   }
 }

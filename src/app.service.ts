@@ -36,7 +36,7 @@ export class AppService {
     const hasil = {
       tanggal: tanggal,
       bulanlalu: summary ? summary._sum.nominal || 0 : 0,
-      data: await this.prisma.transaction.findMany({
+      rows: await this.prisma.transaction.findMany({
         where: {
           tanggal: {
             gte: awalBulanSaatIni, // Dari awal bulan ini
